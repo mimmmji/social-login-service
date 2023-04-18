@@ -1,4 +1,7 @@
-export type SocialLoginProviders = 'kakao' | 'naver';
+import KakaoLogin from "./KakaoLogin";
+import NaverLogin from "./NaverLogin";
+
+export type SocialLoginProviders = 'kakao' | 'naver' | string;
 
 interface User {
   id: number | string;
@@ -6,7 +9,7 @@ interface User {
 
 export enum LoginErrors {
   // naver, kakao 이외의 다른 provider가 넘어왔을 경우 발생하는 에러
-  LoginProviderError,
+  LoginProviderError = 'LoginProviderError',
 }
 
 export interface SocialLoginResponse {
@@ -25,7 +28,31 @@ class SocialLoginService {
   }
 
   async login(): Promise<LoginErrors | SocialLoginResponse> {
-    return LoginErrors.LoginProviderError;
+    if(this.provider === 'kakao'){
+      const response = await new KakaoLogin().login();
+      return {
+        providerId: response.provider_id,
+        provider: 'kakao',
+        user: {
+          id: response.profile.user.id,
+        },
+        scopes: response.profile.scopes,
+        email: response.profile.user.email
+      }
+    } else if (this.provider === 'naver'){
+      const response = await new NaverLogin().login();
+      return {
+        providerId: response.provider.id,
+        provider: 'naver',
+        user: {
+          id: response.provider.id,
+        },
+        scopes: response.profile.scopes,
+        email: response.profile.email
+      }
+    } else{
+      return LoginErrors.LoginProviderError;
+    }
   }
 }
 
