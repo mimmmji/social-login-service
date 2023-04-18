@@ -24,9 +24,6 @@ class SocialLoginService {
   private readonly provider: SocialLoginProviders;
 
   constructor({ provider }: { provider: SocialLoginProviders }) {
-    if(!['kakao','naver'].includes(provider)){
-       LoginErrors.LoginProviderError;
-    }
     this.provider = provider;
   }
 
@@ -55,7 +52,7 @@ class SocialLoginService {
       }
     } else{
       return LoginErrors.LoginProviderError;
-    }   
+    }
   }
 }
 
